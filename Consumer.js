@@ -1,4 +1,4 @@
-const httpFetcher = require("./HttpFetcher");
+const fetch = require('cross-fetch');
 
 const uid = () => String(Date.now().toString(32) + Math.random().toString(16)).replace(/\./g, '');
 
@@ -38,7 +38,7 @@ class Consumer {
         this._resetParams({ queueName, queueType });
 
         let createObj = this._getCreateObj();
-        let r = httpFetcher({
+        let r = fetch({
             hostname: `${this.url}/queue`,
             method: 'POST',
             body: JSON.stringify(createObj),

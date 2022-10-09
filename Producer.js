@@ -1,4 +1,4 @@
-const httpFetcher = require("./HttpFetcher");
+const fetch = require('cross-fetch');
 
 class Producer{
     constructor(url, queueName='', queueType=null){
@@ -11,7 +11,7 @@ class Producer{
         this._setParams({queueName, queueType})
         let createObj = this._getCreateObj();
         let messageObj = this._getMessageObj(createObj);
-        let r = httpFetcher({
+        let r = fetch({
             hostname: `${this.url}/producer`,
             method: 'POST',
             body: JSON.stringify(messageObj),
@@ -26,7 +26,7 @@ class Producer{
         this._resetParams({queueName, queueType});
 
         let createObj = this._getCreateObj();
-        let r = httpFetcher({
+        let r = fetch({
             hostname: `${this.url}/queue`,
             method: 'POST',
             body: JSON.stringify(createObj),
