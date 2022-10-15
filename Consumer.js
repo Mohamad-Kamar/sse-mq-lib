@@ -5,13 +5,13 @@ const uid = () => String(Date.now().toString(32) + Math.random().toString(16)).r
 class Consumer {
     constructor(url) {
         this.url = url;
-        this.queueName = '';
+        this.queueKey = '';
         this.queueType = null;
         this.event = null;
     }
 
-    connect({ queueName, queueType }) {
-        this._resetParams({ queueName, queueType });
+    connect({ queueKey, queueType }) {
+        this._resetParams({ queueKey, queueType });
         let connectObj = this._getCreateObj();
         let connectionSearchParamsString = new URLSearchParams(connectObj).toString();
         let urlWithParams = `${this.url}/consumer/connect?${connectionSearchParamsString}`;
@@ -34,8 +34,8 @@ class Consumer {
         this.event.onerror = onerror;
     }
 
-    async craete({ queueName, queueType }) {
-        this._resetParams({ queueName, queueType });
+    async craete({ queueKey, queueType }) {
+        this._resetParams({ queueKey, queueType });
 
         let createObj = this._getCreateObj();
         let r = fetch({
@@ -52,15 +52,15 @@ class Consumer {
 
     _getCreateObj() {
         let createObj = {};
-        if(this.queueName) createObj.queueName = this.queueName;
+        if(this.queueKey) createObj.queueKey = this.queueKey;
         if(this.queueType) createObj.queueType = this.queueType;
         return createObj;
     }
 
-    _resetParams({ queueName, queueType }) {
+    _resetParams({ queueKey, queueType }) {
         this._resetEvent();
 
-        queueName ? this.queueName = queueName : this.queueName = uid();
+        queueKey ? this.queueKey = queueKey : this.queueKey = uid();
         queueType ? this.queueType = queueType : this.queueType = null;
     }
 

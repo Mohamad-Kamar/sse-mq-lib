@@ -1,14 +1,14 @@
 const fetch = require('cross-fetch');
 
 class Producer{
-    constructor(url, queueName='', queueType=null){
+    constructor(url, queueKey='', queueType=null){
         this.url = url;
-        this.queueName = '';
+        this.queueKey = '';
         this.queueType = null;
     }
 
-    publish({queueName, queueType, message}){
-        this._setParams({queueName, queueType})
+    publish({queueKey, queueType, message}){
+        this._setParams({queueKey, queueType})
         let createObj = this._getCreateObj();
         let messageObj = this._getMessageObj(createObj);
         let r = fetch({
@@ -22,8 +22,8 @@ class Producer{
         return true;
     }
 
-    async craete({queueName, queueType}){
-        this._resetParams({queueName, queueType});
+    async craete({queueKey, queueType}){
+        this._resetParams({queueKey, queueType});
 
         let createObj = this._getCreateObj();
         let r = fetch({
@@ -40,7 +40,7 @@ class Producer{
 
     _getCreateObj(){
         let createObj = {};
-        if(this.queueName) createObj.queueName = this.queueName;
+        if(this.queueKey) createObj.queueKey = this.queueKey;
         if(this.queueType) createObj.queueType = this.queueType;
         return createObj;
     }
@@ -48,12 +48,12 @@ class Producer{
         return {...createObj, message}
     }
 
-    _resetParams({queueName, queueType}){
-        queueName ? this.queueName = queueName: this.queueName = uid();
+    _resetParams({queueKey, queueType}){
+        queueKey ? this.queueKey = queueKey: this.queueKey = uid();
         queueType ? this.queueType = queueType: this.queueType = null;
     }
-    _setParams({queueName, queueType}){
-        if(queueName) this.queueName = queueName;
+    _setParams({queueKey, queueType}){
+        if(queueKey) this.queueKey = queueKey;
         if(queueType) this.queueType = queueType;
     }
 }
