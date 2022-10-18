@@ -1,74 +1,73 @@
 const fetch = require('cross-fetch');
-
-const uid = () => String(Date.now().toString(32) + Math.random().toString(16)).replace(/\./g, '');
+const { InvalidQueueErrors } = require('./ErrorsTypes');
 
 class Consumer {
-    constructor(url) {
-        this.url = url;
-        this.queueKey = '';
-        this.queueType = null;
-        this.event = null;
-    }
+  constructor(url) {
+    this.url = url;
+    this.queueKey = '';
+    this.queueType = null;
+    this.event = null;
+    this.consumerID = null;
+  }
 
-    connect({ queueKey, queueType }) {
-        this._resetParams({ queueKey, queueType });
-        let connectObj = this._getCreateObj();
-        let connectionSearchParamsString = new URLSearchParams(connectObj).toString();
-        let urlWithParams = `${this.url}/consumer/connect?${connectionSearchParamsString}`;
-        let event = new EventSource(urlWithParams);
-        this.event = event;
-        this.event.onmessage = this.onmessage;
-        this.event.onerror = this.onerror;
-    }
+  async connect({
+    queueKey, consumerID, onmessage, onerror,
+  }) {
+    await this.resetConnection({ queueKey, consumerID });
+    const connectObj = this.getCreateObj();
+    const connectionSearchParamsString = new URLSearchParams(connectObj).toString();
+    const urlWithParams = `${this.url}/consumer/connect?${connectionSearchParamsString}`;
+    const event = new EventSource(urlWithParams);
+    this.event = event;
+    this.event.onmessage = onmessage;
+    this.event.onerror = onerror;
+  }
 
-    onmessage(message) {
-        console.log(message);
-    }
-    setOnMessage(onmessage) {
-       this.event.onmessage = onmessage;
-    }
-    onerror(message) {
-        console.error(message);
-    }
-    setOnerror(onerror) {
-        this.event.onerror = onerror;
-    }
+  setOnMessage(onmessage) {
+    this.event.onmessage = onmessage;
+  }
 
-    async craete({ queueKey, queueType }) {
-        this._resetParams({ queueKey, queueType });
+  setOnerror(onerror) {
+    this.event.onerror = onerror;
+  }
 
-        let createObj = this._getCreateObj();
-        let r = fetch({
-            hostname: `${this.url}/queue`,
-            method: 'POST',
-            body: JSON.stringify(createObj),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        let jsonedResults = await r.json();
-        return jsonedResults.connectionParams;
-    }
+  async craete({ queueKey, queueType }) {
+    this.resetConnection({ queueKey, queueType });
 
-    _getCreateObj() {
-        let createObj = {};
-        if(this.queueKey) createObj.queueKey = this.queueKey;
-        if(this.queueType) createObj.queueType = this.queueType;
-        return createObj;
-    }
+    const createObj = this.getCreateObj();
+    const r = fetch({
+      hostname: `${this.url}/queue`,
+      method: 'POST',
+      body: JSON.stringify(createObj),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const jsonedResults = await r.json();
+    return jsonedResults.connectionParams;
+  }
 
-    _resetParams({ queueKey, queueType }) {
-        this._resetEvent();
+  getCreateObj() {
+    const createObj = {};
+    if (this.queueKey) createObj.queueKey = this.queueKey;
+    if (this.consumerID) createObj.consumerID = this.consumerID;
+    return createObj;
+  }
 
-        queueKey ? this.queueKey = queueKey : this.queueKey = uid();
-        queueType ? this.queueType = queueType : this.queueType = null;
-    }
+  async resetConnection({ queueKey, consumerID }) {
+    if (!queueKey) throw new InvalidQueueErrors();
 
-    _resetEvent() {
-        this.event && this.event.close();
-        this.event = null;
-    }
+    this.resetEvent();
+    this.queueKey = queueKey;
+    if (!consumerID) this.consumerID = await this.queueInstance.createQueue();
+
+    return this.consumerID;
+  }
+
+  resetEvent() {
+    if (this.event) this.event.close();
+    this.event = null;
+  }
 }
 
-module.exports = Consumer
-
+module.exports = Consumer;
