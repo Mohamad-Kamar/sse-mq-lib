@@ -14,7 +14,7 @@ class Consumer {
     queueKey, consumerID,
   }) {
     this.setConnectionParams({ queueKey, consumerID });
-    if (!queueKey && !this.queueKey) throw new InvalidQueueErrors();
+    if (this.queueKey) throw new InvalidQueueErrors();
 
     this.consumerID = await this.createConsumer();
     const connectObj = this.getCreateObj();
