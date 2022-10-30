@@ -1,2 +1,3 @@
 /* eslint-disable import/prefer-default-export */
-export class InvalidQueueErrors extends Error {}
+class InvalidQueueErrors extends Error {}
+module.exports = { InvalidQueueErrors };
