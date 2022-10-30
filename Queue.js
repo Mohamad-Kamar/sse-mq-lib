@@ -1,3 +1,5 @@
+const fetch = require('cross-fetch');
+
 class Queue {
   static async craeteQueue({ url, queueKey, queueType }) {
     const createObj = Queue.getCreateObj({ queueKey, queueType });

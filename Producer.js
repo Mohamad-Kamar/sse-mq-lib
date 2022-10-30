@@ -1,12 +1,12 @@
 const fetch = require('cross-fetch');
 
 class Producer {
-  constructor(url, { queueKey }) {
+  constructor(url, { queueKey } = {}) {
     this.url = url;
     this.queueKey = queueKey;
   }
 
-  async publish(message, { queueKey }) {
+  async publish(message, { queueKey } = {}) {
     this.setParams({ queueKey });
     const messageObj = this.getCreateMessageObj(message);
     const results = await fetch({
@@ -27,7 +27,7 @@ class Producer {
     return createObj;
   }
 
-  setParams({ queueKey }) {
+  setParams({ queueKey } = {}) {
     if (queueKey) this.queueKey = queueKey;
   }
 }

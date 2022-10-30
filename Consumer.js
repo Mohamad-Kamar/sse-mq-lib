@@ -1,10 +1,11 @@
 const fetch = require('cross-fetch');
+const EventSource = require('eventsource');
 const { InvalidQueueErrors } = require('./ErrorsTypes');
 
 class Consumer {
   constructor(url, {
     queueKey, consumerID,
-  }) {
+  } = {}) {
     this.url = url;
     this.queueKey = queueKey;
     this.consumerID = consumerID;
@@ -12,7 +13,7 @@ class Consumer {
 
   async connect({
     queueKey, consumerID,
-  }) {
+  } = {}) {
     this.setConnectionParams({ queueKey, consumerID });
     if (this.queueKey) throw new InvalidQueueErrors();
 
@@ -36,7 +37,7 @@ class Consumer {
     return consumerID;
   }
 
-  setConnectionParams({ queueKey, consumerID }) {
+  setConnectionParams({ queueKey, consumerID } = {}) {
     if (queueKey) this.queueKey = queueKey;
     if (consumerID) this.consumerID = consumerID;
   }
