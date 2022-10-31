@@ -15,7 +15,7 @@ class Consumer {
     queueKey, consumerID,
   } = {}) {
     this.setConnectionParams({ queueKey, consumerID });
-    if (this.queueKey) throw new InvalidQueueErrors();
+    if (!this.queueKey) throw new InvalidQueueErrors();
 
     this.consumerID = await this.createConsumer();
     const connectObj = this.getCreateObj();
@@ -31,9 +31,12 @@ class Consumer {
     if (this.consumerID) creatingBody.consumerID = this.consumerID;
     const createEndpointResponse = await fetch(targetUrl, {
       method: 'POST',
-      body: { ...creatingBody },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(creatingBody),
     });
-    const consumerID = createEndpointResponse.text();
+    const consumerID = await createEndpointResponse.text();
     return consumerID;
   }
 

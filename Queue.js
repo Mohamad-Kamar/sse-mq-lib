@@ -3,8 +3,7 @@ const fetch = require('cross-fetch');
 class Queue {
   static async craeteQueue({ url, queueKey, queueType }) {
     const createObj = Queue.getCreateObj({ queueKey, queueType });
-    const r = fetch({
-      hostname: `${url}/queue`,
+    const r = await fetch(`${url}/queue`, {
       method: 'POST',
       body: JSON.stringify(createObj),
       headers: {
@@ -12,7 +11,7 @@ class Queue {
       },
     });
     const jsonedResults = await r.json();
-    return jsonedResults.connectionParams;
+    return jsonedResults;
   }
 
   static getCreateObj({ queueKey, queueType }) {

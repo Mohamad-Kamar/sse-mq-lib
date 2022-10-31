@@ -9,8 +9,7 @@ class Producer {
   async publish(message, { queueKey } = {}) {
     this.setParams({ queueKey });
     const messageObj = this.getCreateMessageObj(message);
-    const results = await fetch({
-      hostname: `${this.url}/producer`,
+    const results = await fetch(`${this.url}/producer`, {
       method: 'POST',
       body: JSON.stringify(messageObj),
       headers: {
