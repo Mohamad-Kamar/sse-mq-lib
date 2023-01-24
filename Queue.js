@@ -20,5 +20,11 @@ class Queue {
     createObj.queueType = queueType;
     return createObj;
   }
+
+  static deleteQueue({ url, queueKey }) {
+    fetch(`${url}/queue/${queueKey}`, {
+      method: 'DELETE',
+    });
+  }
 }
 module.exports = Queue;
