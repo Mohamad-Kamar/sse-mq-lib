@@ -69,6 +69,13 @@ class Consumer {
     if (this.consumerID) createObj.consumerID = this.consumerID;
     return createObj;
   }
+
+  delete() {
+    this.event.close();
+    fetch(`${this.url}/queue/?queueKey=${this.queueKey}&consumerID=${this.consumerID}`, {
+      method: 'DELETE',
+    });
+  }
 }
 
 module.exports = Consumer;
