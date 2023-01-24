@@ -72,7 +72,7 @@ class Consumer {
 
   delete() {
     this.event.close();
-    fetch(`${this.url}/queue/?queueKey=${this.queueKey}&consumerID=${this.consumerID}`, {
+    fetch(`${this.url}/consumer/?queueKey=${this.queueKey}&consumerID=${this.consumerID}`, {
       method: 'DELETE',
     });
   }
