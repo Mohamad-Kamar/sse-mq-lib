@@ -1,7 +1,7 @@
-const fetch = require("cross-fetch");
+const fetch = require('cross-fetch');
 
 class Producer {
-  constructor(url, { queueKey, durable } = {}) {
+  constructor(url, { queueKey } = {}) {
     this.url = url;
     this.queueKey = queueKey;
   }
@@ -10,10 +10,10 @@ class Producer {
     this.setParams({ queueKey });
     const messageObj = this.getCreateMessageObj(message, { queueKey, durable });
     const results = await fetch(`${this.url}/producer`, {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(messageObj),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     return results.status === 201;

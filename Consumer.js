@@ -1,6 +1,6 @@
-const fetch = require("cross-fetch");
-const EventSource = require("eventsource");
-const { InvalidQueueErrors } = require("./ErrorsTypes");
+const fetch = require('cross-fetch');
+const EventSource = require('eventsource');
+const { InvalidQueueErrors } = require('./ErrorsTypes');
 
 class Consumer {
   constructor(url, { queueKey, consumerID } = {}) {
@@ -16,27 +16,34 @@ class Consumer {
     this.consumerID = await this.createConsumer();
     const connectObj = this.getCreateObj();
     const connectionSearchParamsString = new URLSearchParams(
-      connectObj
+      connectObj,
     ).toString();
     const urlWithParams = `${this.url}/consumer/connect?${connectionSearchParamsString}`;
     const event = new EventSource(urlWithParams);
     this.event = event;
   }
 
-  async createConsumer() {
+  async createConsumer({ queueKey, consumerID } = {}) {
     const targetUrl = `${this.url}/consumer`;
-    const creatingBody = { queueKey: this.queueKey };
+    const creatingBody = this.getConnectionParams({ queueKey, consumerID });
     if (this.consumerID) creatingBody.consumerID = this.consumerID;
     const createEndpointResponse = await fetch(targetUrl, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(creatingBody),
     });
     const consumerDetails = await createEndpointResponse.json();
-    const { consumerID } = consumerDetails;
-    return consumerID;
+    const receivedConsumerID = consumerDetails.consumerID;
+    return receivedConsumerID;
+  }
+
+  getConnectionParams({ queueKey, consumerID }) {
+    return {
+      queueKey: queueKey || this.queueKey,
+      consumerID: consumerID || this.consumerID,
+    };
   }
 
   setConnectionParams({ queueKey, consumerID } = {}) {
